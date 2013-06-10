@@ -18,6 +18,7 @@ class World
   attr_reader :fishes, :rocks
 
   def initialize(canvas)
+    @mutex = Mutex.new
     @x, @y = X, Y
     @canvas = canvas
     @canvas['width'] = @x
@@ -32,6 +33,8 @@ class World
 
   def tick
     begin
+      return unless @mutex.try_lock
+
       make_rock() if rand(80) == 0
       @fishes.each do |fish|
         fish.do_actions()
@@ -45,6 +48,8 @@ class World
       # catch and show exceptions in a tk thread
       Tk::messageBox(message: "#{e.to_s}\n#{$@}")
       raise e
+    ensure
+      @mutex.unlock
    end
   end
 
