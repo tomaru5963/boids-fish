@@ -31,15 +31,21 @@ class World
   end
 
   def tick
-    make_rock() if rand(80) == 0
-    @fishes.each do |fish|
-      fish.do_actions()
-    end
-    @fishes.each do |fish|
-      fish.move()
-      wrap_world(fish)
-      fish.redraw()
-    end
+    begin
+      make_rock() if rand(80) == 0
+      @fishes.each do |fish|
+        fish.do_actions()
+      end
+      @fishes.each do |fish|
+        fish.move()
+        wrap_world(fish)
+        fish.redraw()
+      end
+    rescue => e
+      # catch and show exceptions in a tk thread
+      Tk::messageBox(message: "#{e.to_s}\n#{$@}")
+      raise e
+   end
   end
 
   def wrap_world(fish)
